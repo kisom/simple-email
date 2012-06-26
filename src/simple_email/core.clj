@@ -1,6 +1,8 @@
 (ns simple-email.core
   (:import [org.apache.commons.mail SimpleEmail]))
 
+(declare send-message)
+
 (defn mail-server
   "Set up a mail server."
   [mail-host mail-port mail-ssl mail-user mail-pass mail-from]
@@ -26,6 +28,18 @@
   (format "%s_%s" prefix env-var))
 
 (defn send-to
-  "Send an email to a single recipient."
   [server recipient subject message]
-  (apply (eval server) [[recipient] subject message]))
+  (send-message server [recipient] subject message))
+
+(defn send-mail
+  [server recipients subject message]
+  (send-message server recipients subject message))
+
+(defn send-message
+  "Send an email to a single recipient."
+  [server recipients subject message]
+  (try
+    (apply (eval server) [recipients subject message])
+    (hash-map :ok true :message nil)
+    (catch Exception e
+      (hash-map :ok false :message ((.getMessage e))))))
