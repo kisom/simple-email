@@ -46,7 +46,8 @@ from the agent or the synchronous functions is a hash-map with the following key
 * `:message`: the message from the exception on error, nil on success
 * `:cause`: the cause of the exception on error, nil on success
 
-Both 
+simple-email was inspired by [William Groppe's article](http://will.groppe.us/)
+["Sending email from Clojure"](http://will.groppe.us/post/406065542/sending-email-from-clojure).
 
 ## License
 
