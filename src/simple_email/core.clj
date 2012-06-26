@@ -30,7 +30,9 @@
 
 (defn mail-server
   "Set up a mail server."
-  [mail-host mail-port mail-ssl mail-user mail-pass mail-from]
+  ([mail-host mail-port mail-ssl mail-user mail-pass mail-from bounce-address]
+     (mail-server mail-host mail-port mail-ssl mail-user mail-pass mail-from))
+  ([mail-host mail-port mail-ssl mail-user mail-pass mail-from]
   (fn [recipients subject message]
     (let [email (SimpleEmail.)
           mail-port (str mail-port)]
@@ -45,7 +47,7 @@
        (.setSubject email subject)
        (.setMsg email message)
        (.setAuthentication email mail-user mail-pass)
-       (.send email)))))
+       (.send email))))))
 
 (defn mail-server-from-env
   "Set up a mail server with environment variables."
