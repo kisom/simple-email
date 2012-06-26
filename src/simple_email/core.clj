@@ -1,7 +1,32 @@
 (ns simple-email.core
   (:import [org.apache.commons.mail SimpleEmail]))
 
-(declare send-message)
+(defn- prefix-env
+  "Short cut to easily prefix an environment variable."
+  [prefix env-var]
+  (let [prefix (if (not (empty? prefix)) (format "%s_" prefix) "")]
+    (System/getenv
+     (format "%s%s" prefix env-var))))
+
+(defn- parse-bool
+  "Parse a bool from a string."
+  [bool-string]
+  (let [bool-string (.toLower (str bool-string))]
+    (cond (= bool-string "yes") true
+          (= bool-string "true") true
+          (= bool-string "1") true
+          true false)))
+
+(defn- send-message
+  "Send an email, catching errors."
+  [server recipients subject message]
+  (try
+    (apply (eval server) [recipients subject message])
+    (hash-map :ok true :message nil)
+    (catch Exception e
+      (hash-map :ok false
+                :message (.getMessage e)
+                :cause (.toString (.getCause e))))))
 
 (defn mail-server
   "Set up a mail server."
@@ -22,17 +47,10 @@
        (.setAuthentication email mail-user mail-pass)
        (.send email)))))
 
-(defn prefix-env
-  "Short cut to easily prefix an environment variable."
-  [prefix env-var]
-  (let [prefix (if (not (empty? prefix)) (format "%s_" prefix) "")]
-    (System/getenv
-     (format "%s%s" prefix env-var))))
-
 (defn mail-server-from-env
   "Set up a mail server with environment variables."
   [& args]
-  (let [prefix (if (> (count args) 0) prefix "")
+  (let [prefix (if (> (count args) 0) (first args) "")
         mail-host (prefix-env prefix "MAIL_HOST")
         mail-port (prefix-env prefix "MAIL_PORT")
         mail-ssl  (parse-bool (prefix-env prefix "MAIL_SSL"))
@@ -65,17 +83,6 @@
                  :message "Invalid recipients."
                  :cause "Recipients should be a vector or list of addresses.")
        (send-message server recipients subject message))))
-
-(defn send-message
-  "Synchronously send an email, catching errors."
-  [server recipients subject message]
-  (try
-    (apply (eval server) [recipients subject message])
-    (hash-map :ok true :message nil)
-    (catch Exception e
-      (hash-map :ok false
-                :message (.getMessage e)
-                :cause (.getCause e)))))
 
 (defn send-to-async
   "Asynchronously send an email to a single recipient."
