@@ -30,11 +30,23 @@ not ;)).
          "boone@dropsonde.net" 
          "Witty Subject Line" 
          "Your email body goes here.")
+{:ok true :message nil :cause nil}
 
 (send-mail [ "pollard@dropsonde.net" "bigend@drosonde.net" ]
            "This is an email."
            "Further explanation goes here.")
+{:ok true :message nil :cause nil}
 ```
+
+The `send-to` and `send-mail` forms are synchronous; the forms `send-to-async` and
+`send-mail-async` will return an agent that can be queried for its status. The result
+from the agent or the synchronous functions is a hash-map with the following keys:
+
+* `:ok`: true if the mail was successfully sent or false if there was an exception
+* `:message`: the message from the exception on error, nil on success
+* `:cause`: the cause of the exception on error, nil on success
+
+Both 
 
 ## License
 
