@@ -30,25 +30,27 @@
 
 (defn mail-server
   "Set up a mail server."
-  ([mail-host mail-port mail-ssl mail-user mail-pass mail-from bounce-address]
-     (mail-server mail-host mail-port mail-ssl mail-user mail-pass mail-from))
+  ([mail-host mail-port mail-ssl mail-user mail-pass mail-from mail-bounce]
+     (fn [recipients subject message]
+       (let [email (SimpleEmail.)
+             mail-port (str mail-port)]
+         (do
+           (.setHostName email mail-host)
+           (.setSslSmtpPort email mail-port)
+           (.setSmtpPort email (Integer. mail-port))
+           (.setTLS email mail-ssl)
+           (doseq [recipient recipients]
+             (.addTo email recipient))
+           (.setFrom email mail-from)
+           (.setSubject email subject)
+           (.setMsg email message)
+           (.setAuthentication email mail-user mail-pass)
+           (.setBounceAddress mail-bounce)
+           (.send email)))))
   ([mail-host mail-port mail-ssl mail-user mail-pass mail-from]
-  (fn [recipients subject message]
-    (let [email (SimpleEmail.)
-          mail-port (str mail-port)]
-     (do
-       (.setHostName email mail-host)
-       (.setSslSmtpPort email mail-port)
-       (.setSmtpPort email (Integer. mail-port))
-       (.setTLS email mail-ssl)
-       (doseq [recipient recipients]
-          (.addTo email recipient))
-       (.setFrom email mail-from)
-       (.setSubject email subject)
-       (.setMsg email message)
-       (.setAuthentication email mail-user mail-pass)
-       (.send email))))))
-
+     (mail-server mail-host mail-port mail-ssl mail-user mail-pass mail-from
+                  mail-from)))
+7
 (defn mail-server-from-env
   "Set up a mail server with environment variables."
   [& args]
