@@ -50,7 +50,7 @@
   ([mail-host mail-port mail-ssl mail-user mail-pass mail-from]
      (mail-server mail-host mail-port mail-ssl mail-user mail-pass mail-from
                   mail-from)))
-7
+
 (defn mail-server-from-env
   "Set up a mail server with environment variables."
   [& args]
