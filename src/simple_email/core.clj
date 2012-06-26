@@ -42,4 +42,6 @@
     (apply (eval server) [recipients subject message])
     (hash-map :ok true :message nil)
     (catch Exception e
-      (hash-map :ok false :message ((.getMessage e))))))
+      (hash-map :ok false
+                :message (.getMessage e)
+                :cause (.getCause e)))))
