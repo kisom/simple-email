@@ -8,14 +8,17 @@ not ;)).
 
 ## Usage
 
+In `projects.clj` add `[simple-email "1.0.3"]` to the `:dependencies`.
+
 ```clojure
+(use [simple-email.core])
+
 (def mail-host "mail.dropsonde.net")
 (def mail-port 587)
 (def mail-user "pollard")
 (def mail-pass "rickson")
 (def mail-from "pollard@dropsonde.net")
 (def mail-ssl true)
-
 
 (def dropsonde-server
      (simple-email/mail-server
