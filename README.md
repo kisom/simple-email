@@ -21,7 +21,7 @@ In `projects.clj` add `[simple-email "1.0.3"]` to the `:dependencies`.
 (def mail-ssl true)
 
 (def dropsonde-server
-     (simple-email/mail-server
+     (mail-server
           mail-host
           mail-port
           mail-ssl
