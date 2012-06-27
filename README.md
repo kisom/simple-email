@@ -49,6 +49,29 @@ from the agent or the synchronous functions is a hash-map with the following key
 simple-email was inspired by [William Groppe's article](http://will.groppe.us/)
 ["Sending email from Clojure"](http://will.groppe.us/post/406065542/sending-email-from-clojure).
 
+## Using environment variables to set up the mailserver
+The form `mail-server-from-env` will use environment variables to determine
+the appropriate information for the mailserver. The relevant environment 
+variables are
+
+```
+MAIL_HOST
+MAIL_PORT
+MAIL_SSL
+MAIL_USER
+MAIL_PASS
+MAIL_FROM
+```
+
+Alternatively, the variables may be prefixed and that prefix should be passed
+to the `mail-server-from-env` form. For example, if the environment variables
+are named `PREFIX_MAIL_HOST` etc..., you would call
+
+```
+(mail-server-from-env "PREFIX")
+```
+
+
 ## License
 
 `simple-email` is released under the ISC license.
