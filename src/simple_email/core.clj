@@ -1,4 +1,5 @@
 (ns simple-email.core
+  (:require [clojure.string])
   (:import [org.apache.commons.mail SimpleEmail]))
 
 (defn- prefix-env
@@ -35,7 +36,15 @@
        (let [email# (SimpleEmail.)
              mail-port# (cond (string? ~mail-port) ~mail-port
                               (number? ~mail-port) (str ~mail-port)
-                              :else ~mail-port)]
+                              :else ~mail-port)
+             mail-from-name# (clojure.string/replace
+                              (re-find #"&[^<]+" ~mail-from)
+                              #"\s*$" "")
+             mail-from-addr# (re-find #"<.+>" ~mail-from )
+             mail-from-addr# (if-not (nil? mail-from-addr#)
+                               (clojure.string/replace mail-from-addr#
+                                                    #"<(.+)>" "$1")
+                               nil)]
          (do
            (.setHostName email# ~mail-host)
            (.setSslSmtpPort email# mail-port#)
@@ -43,7 +52,9 @@
            (.setTLS email# ~mail-ssl)
            (doseq [recipient# recipients#]
              (.addTo email# recipient#))
-           (.setFrom email# (format "\"%s\"" ~mail-from))
+           (if (nil? mail-from-addr#)
+             (.setFrom email# ~mail-from)
+             (.setFrom email# mail-from-addr# mail-from-name#))
            (.setSubject email# subject#)
            (.setMsg email# message#)
            (.setAuthentication email# ~mail-user ~mail-pass)
