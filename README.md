@@ -8,7 +8,7 @@ not ;)).
 
 ## Usage
 
-In `projects.clj` add `[simple-email "1.0.3"]` to the `:dependencies`.
+In `projects.clj` add `[simple-email "1.0.4"]` to the `:dependencies`.
 
 ```clojure
 (use [simple-email.core])

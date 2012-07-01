@@ -11,7 +11,7 @@
 (defn- parse-bool
   "Parse a bool from a string."
   [bool-string]
-  (let [bool-string (.toLower (str bool-string))]
+  (let [bool-string (.toLowerCase (str bool-string))]
     (cond (= bool-string "yes") true
           (= bool-string "true") true
           (= bool-string "1") true
