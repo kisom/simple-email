@@ -24,13 +24,15 @@
     (apply (eval server) [recipients subject message])
     (hash-map :ok true :message nil)
     (catch Exception e
-      (hash-map :ok false
-                :message (.getMessage e)
-                :cause (.toString (.getCause e))))))
+      (let [cause (.getCause e)
+            cause (if (nil? cause) nil (.toString cause))]
+        (hash-map :ok false
+                  :message (.getMessage e)
+                  :cause cause)))))
 
 (defn mail-server
   "Set up a mail server."
-  ([mail-host mail-port mail-ssl mail-user mail-pass mail-from mail-bounce]
+  [mail-host mail-port mail-ssl mail-user mail-pass mail-from]
      (fn [recipients subject message]
        (let [email (SimpleEmail.)
              mail-port (str mail-port)]
@@ -45,11 +47,7 @@
            (.setSubject email subject)
            (.setMsg email message)
            (.setAuthentication email mail-user mail-pass)
-           (.setBounceAddress mail-bounce)
            (.send email)))))
-  ([mail-host mail-port mail-ssl mail-user mail-pass mail-from]
-     (mail-server mail-host mail-port mail-ssl mail-user mail-pass mail-from
-                  mail-from)))
 
 (defn mail-server-from-env
   "Set up a mail server with environment variables."
