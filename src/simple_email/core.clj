@@ -43,7 +43,7 @@
            (.setTLS email# ~mail-ssl)
            (doseq [recipient# recipients#]
              (.addTo email# recipient#))
-           (.setFrom email# ~mail-from)
+           (.setFrom email# (format "\"%s\"" ~mail-from))
            (.setSubject email# subject#)
            (.setMsg email# message#)
            (.setAuthentication email# ~mail-user ~mail-pass)
