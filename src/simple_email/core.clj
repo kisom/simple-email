@@ -17,37 +17,37 @@
           (= bool-string "1") true
           true false)))
 
-(defn- send-message
-  "Send an email, catching errors."
+(defmacro send-message
   [server recipients subject message]
-  (try
-    (apply (eval server) [recipients subject message])
-    (hash-map :ok true :message nil)
-    (catch Exception e
-      (let [cause (.getCause e)
-            cause (if (nil? cause) nil (.toString cause))]
-        (hash-map :ok false
-                  :message (.getMessage e)
-                  :cause cause)))))
+  `(try
+     (~server ~recipients ~subject ~message)
+     (catch Exception e#
+       (let [cause# (if-not (nil? (.getCause e#))
+                      (.toString (.getCause e#))
+                      nil)]
+         (hash-map :ok false
+                   :message (.getMessage e#)
+                   :cause cause#)))))
 
-(defn mail-server
-  "Set up a mail server."
+(defmacro mail-server
   [mail-host mail-port mail-ssl mail-user mail-pass mail-from]
-     (fn [recipients subject message]
-       (let [email (SimpleEmail.)
-             mail-port (str mail-port)]
+  `(fn [recipients# subject# message#]
+       (let [email# (SimpleEmail.)
+             mail-port# (cond (string? ~mail-port) ~mail-port
+                              (number? ~mail-port) (str ~mail-port)
+                              :else ~mail-port)]
          (do
-           (.setHostName email mail-host)
-           (.setSslSmtpPort email mail-port)
-           (.setSmtpPort email (Integer. mail-port))
-           (.setTLS email mail-ssl)
-           (doseq [recipient recipients]
-             (.addTo email recipient))
-           (.setFrom email mail-from)
-           (.setSubject email subject)
-           (.setMsg email message)
-           (.setAuthentication email mail-user mail-pass)
-           (.send email)))))
+           (.setHostName email# ~mail-host)
+           (.setSslSmtpPort email# mail-port#)
+           (.setSmtpPort email# (Integer. mail-port#))
+           (.setTLS email# ~mail-ssl)
+           (doseq [recipient# recipients#]
+             (.addTo email# recipient#))
+           (.setFrom email# ~mail-from)
+           (.setSubject email# subject#)
+           (.setMsg email# message#)
+           (.setAuthentication email# ~mail-user ~mail-pass)
+           (.send email#)))))
 
 (defn mail-server-from-env
   "Set up a mail server with environment variables."
@@ -64,7 +64,6 @@
 (defn send-to
   "Synchronously send an email to a single recipient."
   ([agent-state server recipient subject message]
-     (println "state passed in")
      (send-message server [recipient] subject message))
   ([server recipient subject message]
      (if (not (string? recipient))
