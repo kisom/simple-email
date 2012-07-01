@@ -41,6 +41,8 @@ In `projects.clj` add `[simple-email "1.0.7"]` to the `:dependencies`.
 {:ok true :message nil :cause nil}
 ```
 
+The `mail-from` value can be in the form "user@domain" or "Joe User <user@domain>".
+
 The `send-to` and `send-mail` forms are synchronous; the forms `send-to-async` and
 `send-mail-async` will return an agent that can be queried for its status. The result
 from the agent or the synchronous functions is a hash-map with the following keys:
