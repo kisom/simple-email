@@ -1,4 +1,4 @@
-(defproject simple-email "1.0.7-RC1"
+(defproject simple-email "1.0.7"
   :description "Clojure wrapper around Apache Commons Email"
   :dependencies [[org.clojure/clojure "1.3.0"]
                  [org.apache.commons/commons-email "1.2"]]

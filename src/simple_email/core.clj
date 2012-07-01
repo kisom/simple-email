@@ -23,12 +23,14 @@
   `(try
      (~server ~recipients ~subject ~message)
      (catch Exception e#
-       (let [cause# (if-not (nil? (.getCause e#))
-                      (.toString (.getCause e#))
-                      nil)]
-         (hash-map :ok false
-                   :message (.getMessage e#)
-                   :cause cause#)))))
+       (do
+         (let [cause# (if-not (nil? (.getCause e#))
+                        (.toString (.getCause e#))
+                        nil)]
+           (hash-map :ok false
+                     :type (.getClass e#)
+                     :message (.getMessage e#)
+                     :cause cause#))))))
 
 (defmacro mail-server
   [mail-host mail-port mail-ssl mail-user mail-pass mail-from]
@@ -37,9 +39,11 @@
              mail-port# (cond (string? ~mail-port) ~mail-port
                               (number? ~mail-port) (str ~mail-port)
                               :else ~mail-port)
-             mail-from-name# (clojure.string/replace
-                              (re-find #"&[^<]+" ~mail-from)
-                              #"\s*$" "")
+             mail-from-name# (re-find #"^[^<]+" ~mail-from)
+             mail-from-name# (if-not (nil? mail-from-name#)
+                               (clojure.string/replace mail-from-name#
+                                                       #"\s*$" "")
+                               nil)
              mail-from-addr# (re-find #"<.+>" ~mail-from )
              mail-from-addr# (if-not (nil? mail-from-addr#)
                                (clojure.string/replace mail-from-addr#
@@ -52,9 +56,14 @@
            (.setTLS email# ~mail-ssl)
            (doseq [recipient# recipients#]
              (.addTo email# recipient#))
-           (if (nil? mail-from-addr#)
-             (.setFrom email# ~mail-from)
-             (.setFrom email# mail-from-addr# mail-from-name#))
+           (cond (and (nil? mail-from-addr#)
+                      (nil? mail-from-name#)) (.setFrom email#
+                                                        (format "%s@%s"
+                                                                ~mail-user
+                                                                ~mail-host))
+                      (nil? mail-from-addr#) (.setFrom email# mail-from-name#)
+                      (nil? mail-from-name#) (.setFrom email# mail-from-addr#)
+                      :else (.setFrom email# mail-from-addr# mail-from-name#))
            (.setSubject email# subject#)
            (.setMsg email# message#)
            (.setAuthentication email# ~mail-user ~mail-pass)
