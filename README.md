@@ -81,7 +81,7 @@ are named `PREFIX_MAIL_HOST` etc..., you would call
 
 ```
 The ISC license:
-Copyright (c) 2011 Kyle Isom <coder@kyleisom.net>
+Copyright (c) 2012 Kyle Isom <coder@kyleisom.net>
 
 Permission to use, copy, modify, and distribute this software for any
 purpose with or without fee is hereby granted, provided that the above 
