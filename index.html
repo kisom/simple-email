@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Simple-email by kisom</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Simple-email</h1>
+        <p>Clojure wrapper around the Apache Commons Email library.</p>
+
+        <p class="view"><a href="https://github.com/kisom/simple-email">View the Project on GitHub <small>kisom/simple-email</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/kisom/simple-email/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/kisom/simple-email/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/kisom/simple-email">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>simple-email</h1>
+
+<p><code>simple-email</code> is a Clojure wrapper around the Apache Commons Email.</p>
+
+<p>Right now it only supports sending plaintext emails; in the future, it
+may be extended to support HTML emails (but I hate HTML email so probably
+not ;)).</p>
+
+<h2>Usage</h2>
+
+<p>In <code>projects.clj</code> add <code>[simple-email "1.0.7"]</code> to the <code>:dependencies</code>.</p>
+
+<div class="highlight"><pre><span class="p">(</span><span class="nf">use</span> <span class="p">[</span><span class="nv">simple-email.core</span><span class="p">])</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">mail-host</span> <span class="s">"mail.dropsonde.net"</span><span class="p">)</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">mail-port</span> <span class="mi">587</span><span class="p">)</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">mail-user</span> <span class="s">"pollard"</span><span class="p">)</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">mail-pass</span> <span class="s">"rickson"</span><span class="p">)</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">mail-from</span> <span class="s">"pollard@dropsonde.net"</span><span class="p">)</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">mail-ssl</span> <span class="nv">true</span><span class="p">)</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">dropsonde-server</span>
+     <span class="p">(</span><span class="nf">mail-server</span>
+          <span class="nv">mail-host</span>
+          <span class="nv">mail-port</span>
+          <span class="nv">mail-ssl</span>
+          <span class="nv">mail-user</span>
+          <span class="nv">mail-pass</span>
+          <span class="nv">mail-from</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nf">send-to</span> <span class="nv">dropsonde-server</span>
+         <span class="s">"boone@dropsonde.net"</span> 
+         <span class="s">"Witty Subject Line"</span> 
+         <span class="s">"Your email body goes here."</span><span class="p">)</span>
+<span class="p">{</span><span class="ss">:ok</span> <span class="nv">true</span> <span class="ss">:message</span> <span class="nv">nil</span> <span class="ss">:cause</span> <span class="nv">nil</span><span class="p">}</span>
+
+<span class="p">(</span><span class="nf">send-mail</span> <span class="p">[</span> <span class="s">"pollard@dropsonde.net"</span> <span class="s">"bigend@drosonde.net"</span> <span class="p">]</span>
+           <span class="s">"This is an email."</span>
+           <span class="s">"Further explanation goes here."</span><span class="p">)</span>
+<span class="p">{</span><span class="ss">:ok</span> <span class="nv">true</span> <span class="ss">:message</span> <span class="nv">nil</span> <span class="ss">:cause</span> <span class="nv">nil</span><span class="p">}</span>
+</pre></div>
+
+<p>The <code>mail-from</code> value can be in the form "user@domain" or "Joe User <a href="mailto:user@domain">user@domain</a>".</p>
+
+<p>The <code>send-to</code> and <code>send-mail</code> forms are synchronous; the forms <code>send-to-async</code> and
+<code>send-mail-async</code> will return an agent that can be queried for its status. The result
+from the agent or the synchronous functions is a hash-map with the following keys:</p>
+
+<ul>
+<li>
+<code>:ok</code>: true if the mail was successfully sent or false if there was an exception</li>
+<li>
+<code>:message</code>: the message from the exception on error, nil on success</li>
+<li>
+<code>:cause</code>: the cause of the exception on error, nil on success</li>
+</ul><p>simple-email was inspired by <a href="http://will.groppe.us/">William Groppe's article</a>
+<a href="http://will.groppe.us/post/406065542/sending-email-from-clojure">"Sending email from Clojure"</a>.</p>
+
+<h2>Using environment variables to set up the mailserver</h2>
+
+<p>The form <code>mail-server-from-env</code> will use environment variables to determine
+the appropriate information for the mailserver. The relevant environment 
+variables are</p>
+
+<pre><code>MAIL_HOST
+MAIL_PORT
+MAIL_SSL
+MAIL_USER
+MAIL_PASS
+MAIL_FROM
+</code></pre>
+
+<p>Alternatively, the variables may be prefixed and that prefix should be passed
+to the <code>mail-server-from-env</code> form. For example, if the environment variables
+are named <code>PREFIX_MAIL_HOST</code> etc..., you would call</p>
+
+<pre><code>(mail-server-from-env "PREFIX")
+</code></pre>
+
+<h2>License</h2>
+
+<p><code>simple-email</code> is released under the ISC license.</p>
+
+<pre><code>The ISC license:
+Copyright (c) 2012 Kyle Isom &lt;coder@kyleisom.net&gt;
+
+Permission to use, copy, modify, and distribute this software for any
+purpose with or without fee is hereby granted, provided that the above 
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. 
+
+</code></pre>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/kisom">kisom</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
