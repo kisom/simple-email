@@ -76,6 +76,10 @@ are named `PREFIX_MAIL_HOST` etc..., you would call
 (mail-server-from-env "PREFIX")
 ```
 
+## Contributors
+[Ken Restivo](https://github.com/kenrestivo) did some cleaning up for
+simple-email 1.0.8.
+
 
 ## License
 
