@@ -83,8 +83,6 @@
 
 (defn send-to
   "Synchronously send an email to a single recipient."
-  ([agent-state server recipient subject message]
-     (send-message server [recipient] subject message))
   ([server recipient subject message]
      (if (not (string? recipient))
        (hash-map :ok false
@@ -94,8 +92,6 @@
 
 (defn send-mail
   "Synchronously send an email to a list of recipients."
-  ([agent-state server recipients subject message]
-     (send-message server recipients subject message))
   ([server recipients subject message]
      (if (and
           (not (vector? recipients))
@@ -108,11 +104,9 @@
 (defn send-to-async
   "Asynchronously send an email to a single recipient."
   [server recipient subject message]
-  (let [mail-agent (agent {})]
-    (send mail-agent send-to server recipient subject message)))
+    (future (send-to server recipient subject message)))
 
 (defn send-mail-async
   "Asynchronously send email to a list of recipients."
   [server recipient subject message]
-  (let [mail-agent (agent {})]
-    (send mail-agent send-mail server recipient subject message)))
+    (future (send-mail server recipient subject message)))
